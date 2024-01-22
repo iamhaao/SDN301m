@@ -1,5 +1,4 @@
 var createError = require("http-errors");
-http = require("http");
 var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
@@ -54,9 +53,8 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.render("error");
 });
-const server = http.createServer(app);
 
-server.listen(port, hostname, () => {
+app.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
 });
 module.exports = app;
