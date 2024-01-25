@@ -158,7 +158,7 @@ dishRouter
         (dish) => {
           if (dish != null) {
             for (var i = dish.comments.length - 1; i >= 0; i--) {
-              dish.comments.id(dish.comments[i]._id).remove();
+              dish.comments.id(dish.comments[i]._id).deleteOne();
             }
             dish.save().then(
               (dish) => {
@@ -250,7 +250,7 @@ dishRouter
       .then(
         (dish) => {
           if (dish != null && dish.comments.id(req.params.commentId) != null) {
-            dish.comments.id(req.params.commentId).remove();
+            dish.comments.id(req.params.commentId).deleteOne();
             dish.save().then(
               (dish) => {
                 res.statusCode = 200;
