@@ -3,6 +3,8 @@ const bodyParser = require("body-parser");
 
 const authorRouter = express.Router();
 
+const Author = require("../models/authors");
+
 authorRouter.use(bodyParser.json());
 authorRouter.all("/", (req, res, next) => {
   res.statusCode = 200;
@@ -10,31 +12,67 @@ authorRouter.all("/", (req, res, next) => {
   next();
 });
 authorRouter.get("/", (req, res, next) => {
-  res.end("Will send all the authors to you!");
+  Author.find({})
+    .then(
+      (authors) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(authors);
+      },
+      (err) => next(err)
+    )
+    .catch((err) => next(err));
 });
 authorRouter.post("/", (req, res, next) => {
-  res.end(
-    "Will add the author: " +
-      req.body.id +
-      " with name: " +
-      req.body.name +
-      " bod: " +
-      req.body.bod +
-      " country:" +
-      req.body.country
-  );
+  const newAuthor = new Author(req.body);
+  newAuthor
+    .save()
+    .then(
+      (author) => {
+        console.log("author Created ", author);
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(author);
+      },
+      (err) => next(err)
+    )
+    .catch((err) => next(err));
 });
 authorRouter.put("/", (req, res, next) => {
   res.statusCode = 403;
   res.end("PUT operation not supported on /authors");
 });
 authorRouter.delete("/", (req, res, next) => {
-  res.end("Deleting all authors");
+  Author.deleteMany({})
+    .then(
+      (resp) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(resp);
+      },
+      (err) => next(err)
+    )
+    .catch((err) => next(err));
 });
 authorRouter.get("/:authorId", (req, res, next) => {
-  res.end(
-    "Will send details of the author: " + req.params.authorId + " to you!"
-  );
+  Author.findById(req.params.authorId)
+    .then(
+      (author) => {
+        if (author !== null) {
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "application/json");
+          res.json(author);
+        } else {
+          res.statusCode = 404;
+          res.setHeader("Content-Type", "application/json");
+          res.end("Author: " + req.params.authorId + " NOT FOUND");
+        }
+      },
+      (err) => next(err)
+    )
+    .catch((err) => {
+      next(err);
+    });
 });
 
 authorRouter.post("/:authorId", (req, res, next) => {
@@ -43,20 +81,42 @@ authorRouter.post("/:authorId", (req, res, next) => {
 });
 
 authorRouter.put("/:authorId", (req, res, next) => {
-  res.write("Updating the author: " + req.params.authorId + "\n");
-  res.end(
-    "Will update the author: " +
-      req.body.id +
-      " with name: " +
-      req.body.name +
-      " bod: " +
-      req.body.bod +
-      " country:" +
-      req.body.country
-  );
+  Author.findByIdAndUpdate(
+    req.params.authorId,
+    {
+      $set: req.body,
+    },
+    { new: true }
+  )
+    .then(
+      (author) => {
+        if (author !== null) {
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "application/json");
+          res.json(author);
+        } else {
+          res.statusCode = 404;
+          res.setHeader("Content-Type", "application/json");
+          res.end("Author: " + req.params.authorId + " NOT FOUND");
+        }
+      },
+      (err) => next(err)
+    )
+    .catch((err) => {
+      next(err);
+    });
 });
 
 authorRouter.delete("/:authorId", (req, res, next) => {
-  res.end("Deleting author: " + req.params.authorId);
+  Author.findByIdAndDelete(req.params.authorId)
+    .then(
+      (resp) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(resp);
+      },
+      (err) => next(err)
+    )
+    .catch((err) => next(err));
 });
 module.exports = authorRouter;

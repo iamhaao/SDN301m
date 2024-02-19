@@ -23,45 +23,48 @@ var commentSchema = new Schema(
   }
 );
 
-const dishSchema = new Schema(
+const bookShema = new Schema(
   {
-    name: {
+    isbn: {
+      type: String,
+      required: true,
+    },
+    title: {
       type: String,
       required: true,
       unique: true,
+    },
+    subTitle: {
+      type: String,
+      required: true,
+    },
+    publish_date: {
+      type: Date,
+      required: true,
+    },
+    publisher: {
+      type: String,
+      required: true,
+    },
+    pages: {
+      type: Number,
+      default: 0,
+    },
+    website: {
+      type: String,
+      default: "",
     },
     description: {
       type: String,
       required: true,
     },
-    image: {
-      type: String,
-      required: true,
-    },
-    category: {
-      type: String,
-      required: true,
-    },
-    label: {
-      type: String,
-      default: "",
-    },
-    price: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-    featured: {
-      type: Boolean,
-      default: false,
-    },
-    comments: [commentSchema],
+    comment: [commentSchema],
   },
   {
     timestamps: true,
   }
 );
 
-var Dishes = mongoose.model("Dish", dishSchema);
+var Book = mongoose.model("Book", bookShema);
 
-module.exports = Dishes;
+module.exports = Book;
