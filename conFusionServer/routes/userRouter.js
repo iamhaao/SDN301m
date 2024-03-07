@@ -25,34 +25,28 @@ router.get(
       });
   }
 );
-router.post("/signup", (req, res, next) => {
-  User.register(
-    new User({ username: req.body.username }),
-    req.body.password,
-    (err, user) => {
-      if (err) {
-        res.statusCode = 500;
-        res.setHeader("Content-Type", "application/json");
-        res.json({ err: err });
-      } else {
-        if (req.body.firstname) user.firstname = req.body.firstname;
-        if (req.body.lastname) user.lastname = req.body.lastname;
-        user.save((err, user) => {
-          if (err) {
-            res.statusCode = 500;
-            res.setHeader("Content-Type", "application/json");
-            res.json({ err: err });
-            return;
-          }
-          passport.authenticate("local")(req, res, () => {
-            res.statusCode = 200;
-            res.setHeader("Content-Type", "application/json");
-            res.json({ success: true, status: "Registration Successful!" });
-          });
-        });
-      }
-    }
-  );
+router.post("/signup", async (req, res, next) => {
+  try {
+    const newUser = await User.register(
+      new User({ username: req.body.username }),
+      req.body.password
+    );
+
+    if (req.body.firstname) newUser.firstname = req.body.firstname;
+    if (req.body.lastname) newUser.lastname = req.body.lastname;
+
+    await newUser.save();
+
+    passport.authenticate("local")(req, res, () => {
+      res
+        .status(200)
+        .json({ success: true, status: "Registration Successful!" });
+    });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ error: "User registration failed", details: err.message });
+  }
 });
 
 router.post("/login", passport.authenticate("local"), (req, res) => {

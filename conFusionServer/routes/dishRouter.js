@@ -296,7 +296,7 @@ dishRouter
               err.status = 403; // Forbidden
               return next(err);
             }
-            dish.comments.id(req.params.commentId).remove();
+            dish.comments.pull({ _id: req.params.commentId });
             dish.save().then(
               (dish) => {
                 Dishes.findById(dish._id)
@@ -304,7 +304,7 @@ dishRouter
                   .then((dish) => {
                     res.statusCode = 200;
                     res.setHeader("Content-Type", "application/json");
-                    res.json(dish);
+                    res.json(`Deleted commentId ${req.params.commentId}`);
                   });
               },
               (err) => next(err)

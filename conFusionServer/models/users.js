@@ -10,7 +10,6 @@ var User = new Schema({
   },
   password: {
     type: String,
-    required: true,
   },
   firstname: {
     type: String,

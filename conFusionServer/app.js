@@ -15,6 +15,8 @@ var dishRouter = require("./routes/dishRouter");
 var promoRouter = require("./routes/promotionRouter");
 var leaderRouter = require("./routes/leaderRouter");
 var usersRouter = require("./routes/userRouter");
+var uploadRouter = require("./routes/uploadRouter");
+
 const hostname = "localhost";
 const port = 3000;
 const url = config.mongoUrl;
@@ -70,6 +72,19 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/dishes", dishRouter);
 app.use("/promotions", promoRouter);
 app.use("/leaders", leaderRouter);
+app.use("/imageUpload", uploadRouter);
+
+// // Secure traffic only
+// app.all("*", (req, res, next) => {
+//   if (req.secure) {
+//     return next();
+//   } else {
+//     res.redirect(
+//       307,
+//       "https://" + req.hostname + ":" + app.get("secPort") + req.url
+//     );
+//   }
+// });
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
   next(createError(404));
