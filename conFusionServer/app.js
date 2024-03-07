@@ -16,13 +16,14 @@ var promoRouter = require("./routes/promotionRouter");
 var leaderRouter = require("./routes/leaderRouter");
 var usersRouter = require("./routes/userRouter");
 var uploadRouter = require("./routes/uploadRouter");
+var favoriteRouter = require("./routes/favoriteRouter");
 
 const hostname = "localhost";
 const port = 3000;
 const url = config.mongoUrl;
 const connect = mongoose.connect(url);
-
 var app = express();
+
 app.use(
   session({
     name: "session-id",
@@ -55,24 +56,25 @@ connect.then(
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 
-function auth(req, res, next) {
-  console.log(req.user);
+// function auth(req, res, next) {
+//   console.log(req.user);
 
-  if (!req.user) {
-    var err = new Error("You are not authenticated!");
-    err.status = 403;
-    next(err);
-  } else {
-    next();
-  }
-}
+//   if (!req.user) {
+//     var err = new Error("You are not authenticated!");
+//     err.status = 403;
+//     next(err);
+//   } else {
+//     next();
+//   }
+// }
 
-app.use(auth);
+// app.use(auth);
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/dishes", dishRouter);
 app.use("/promotions", promoRouter);
 app.use("/leaders", leaderRouter);
 app.use("/imageUpload", uploadRouter);
+app.use("/favorites", favoriteRouter);
 
 // // Secure traffic only
 // app.all("*", (req, res, next) => {
